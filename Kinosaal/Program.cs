@@ -4,15 +4,15 @@ namespace Kinosaal;
 
 internal class Program
 {
-    public static Kinosaal saal = new Kinosaal(8, 18); 
+    public static Kinosaal saal = new Kinosaal(8, 18, "Oscar", "Der letzte Sommer"); 
     static Menue menue = new Menue();
-    static char hauptAuswahl = 'A';
+    static char hauptAuswahl = ' ';
     static int ausgewaehlteReihe = 0;
     static int ausgewaehlteSpalte = 0;
     static string nachricht = "";
     static void Main(string[] args)
     {
-        saal.Freigeben();       // erste Initialisierung 
+        saal.SaalLaden();       
 
         do
         {
@@ -40,6 +40,7 @@ internal class Program
             //Console.ReadKey();
         }
         while (hauptAuswahl != 'e');
+        saal.SaalSpeichern();
         Begruessung("Vielen Dank, dass Sie unser System genutzt haben.Ich wünsche Ihnen einen schönen Tag!");
     }
 

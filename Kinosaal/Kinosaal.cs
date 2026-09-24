@@ -17,12 +17,19 @@ internal class Kinosaal
     private char[,] saal;  // 2D-Array zur Darstellung des Sitzplans.
                           // Konvention für Sitzwerte (Beispiel):
                           // 'B' = Belegen, 'R' = Reserviert, 'F' = frei
+    private string Saalname { get; set; }
 
-    public Kinosaal(int r, int s)
+    private string Filmtitel { get; set; }
+      
+        
+
+    public Kinosaal(int r, int s, string saalname, string filmtitel)
     {  
         AnzahlReihen = r; 
         AnzahlSpalten = s;
         saal = new char[r, s];
+        Saalname = saalname;
+        Filmtitel = filmtitel;
     }
 
     
@@ -92,7 +99,7 @@ internal class Kinosaal
 
     public void Visualisieren()
     {
-        
+        Console.WriteLine($"Saal: {Saalname} | Film: {Filmtitel}");
         StatistikAnzeigen();
 
         Console.WriteLine(); 
@@ -177,5 +184,51 @@ internal class Kinosaal
         Console.WriteLine(
             $"Auslastung: {gesamtauslastung:F1} % | " +
             $"Verkaufsauslastung: {verkaufsauslastung:F1} %");
+    }
+
+    public void SaalSpeichern()
+    {
+        using (StreamWriter writer = new StreamWriter("Saal.csv"))
+        {
+            for (int i = 0; i < saal.GetLength(0); i++)
+            {
+                for (int j = 0; j < saal.GetLength(1); j++)
+                {
+                    writer.Write(saal[i, j]);
+
+                    if (j < saal.GetLength(1) - 1)
+                    {
+                        writer.Write(",");
+                    }
+                }
+
+                writer.WriteLine();
+            }
+        }
+    }
+
+    public void SaalLaden()
+    {
+        if (!File.Exists("Saal.csv"))
+        {
+            Freigeben();
+            return;
+        }
+        string[] zeilen = File.ReadAllLines("Saal.csv");
+
+        int rows = zeilen.Length;
+        int seats = zeilen[0].Split(',').Length;
+
+        saal = new char[rows, seats];
+
+        for (int i = 0; i < rows; i++)
+        {
+            string[] werte = zeilen[i].Split(',');
+
+            for (int j = 0; j < seats; j++)
+            {
+                saal[i, j] = werte[j][0];
+            }
+        }
     }
 }
