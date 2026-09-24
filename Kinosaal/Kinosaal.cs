@@ -11,18 +11,23 @@ namespace Kinosaal;
  
 internal class Kinosaal
 {
+    // Anzahl der Reihen im Kinosaal
     public int AnzahlReihen { get; set; } = 0; // Anzahl der Reihen im Kinosaal
-    public int AnzahlSpalten { get; set; } = 0; // Anzahl der Spalten pro Reihe im 
-    
+    // Anzahl der Spalten pro Reihe im Kinosaal
+    public int AnzahlSpalten { get; set; } = 0; // Anzahl der Spalten pro Reihe im Kinosaal
+
+    // 2D-Array zur internen Darstellung des Sitzplans.
+    // Konvention für Sitzwerte: 'B' = Belegt, 'R' = Reserviert, 'F' = Frei
     private char[,] saal;  // 2D-Array zur Darstellung des Sitzplans.
-                          // Konvention für Sitzwerte (Beispiel):
-                          // 'B' = Belegen, 'R' = Reserviert, 'F' = frei
+
+    // Name des Saals (Anzeigezweck)
     private string Saalname { get; set; }
 
+    // Aktueller Filmtitel im Saal (Anzeigezweck)
     private string Filmtitel { get; set; }
-      
-        
 
+    // Konstruktor: Initialisiert die Anzahl Reihen/Spalten, das interne Array
+    // und setzt den Saalnamen sowie den Filmtitel.
     public Kinosaal(int r, int s, string saalname, string filmtitel)
     {  
         AnzahlReihen = r; 
@@ -33,6 +38,8 @@ internal class Kinosaal
     }
 
     
+    // Gibt den Wert eines bestimmten Sitzes in der Konsole aus.
+    // Parameter: r = Zeilenindex, s = Spaltenindex (nullbasiert für interne Darstellung).
     public void Ausgeben(int r, int s)
     {
         char wert = saal[r, s];
@@ -48,6 +55,7 @@ internal class Kinosaal
         Console.Write(" |");
     }
 
+    // Setzt alle Plätze im Saal auf 'F' (frei) und gibt eine Bestätigungsnachricht zurück.
     public string Freigeben() 
     {
         for (int i = 0; i < AnzahlReihen; i++)
@@ -60,6 +68,8 @@ internal class Kinosaal
         return "   Alle Plätze können erneut gebucht werden  ";
     }
 
+    // Versucht, einen Platz zu reservieren (1-basierte Eingabe für r und s).
+    // Prüft vorher den Zustand und gibt eine Ergebnisnachricht zurück.
     public string Reservieren(int r, int s)
     {
         char wert = saal[r - 1, s - 1];
@@ -73,6 +83,9 @@ internal class Kinosaal
         return nachricht; 
     }
 
+    // Prüft den Zustand eines Platzes und setzt eine Fehlernachricht,
+    // falls der Platz bereits belegt oder reserviert ist.
+    // Wird intern von Belegen/Reservieren verwendet.
     private void ZustandZeigen(int r, int s, char wert, ref string nachricht)
     {
         Console.ForegroundColor = ConsoleColor.Red;
@@ -84,6 +97,8 @@ internal class Kinosaal
     }
 
     
+    // Belegt einen Platz (1-basierte Indizes). Prüft zuvor den Zustand
+    // und gibt eine Erfolg- oder Fehlermeldung zurück.
     public string Belegen(int r, int s)
     {
         char wert = saal[r - 1, s - 1];
@@ -97,6 +112,8 @@ internal class Kinosaal
         return nachricht;
     }
 
+    // Visualisiert den Saalplan in der Konsole inklusive Kopfzeile und Statistik.
+    // Zeichnet die Sitznummern, Reihen und ruft für jeden Platz die Ausgabe-Methode auf.
     public void Visualisieren()
     {
         Console.WriteLine($"Saal: {Saalname} | Film: {Filmtitel}");
@@ -105,7 +122,7 @@ internal class Kinosaal
         Console.WriteLine(); 
         Console.WriteLine("          Visueller Saalplan");
         Console.WriteLine();
-        
+
         TrennlinieDrucken();
         Console.Write(" |   |");
         for (int j = 1; j <= AnzahlSpalten; j++)
@@ -134,6 +151,8 @@ internal class Kinosaal
         }
     }
 
+    // Druckt eine Trennlinie für die visuelle Darstellung des Saalplans.
+    // Diese Methode wird intern von Visualisieren verwendet.
     private void TrennlinieDrucken()
     {
         Console.Write(" +----");
@@ -141,6 +160,8 @@ internal class Kinosaal
         Console.WriteLine();
     }
 
+    // Ermittelt und zeigt Statistiken zum Saal an:
+    // Anzahl freier, reservierter und verkaufter Plätze sowie Auslastungen.
     public void StatistikAnzeigen()
     {
         int frei = 0;
@@ -186,6 +207,10 @@ internal class Kinosaal
             $"Verkaufsauslastung: {verkaufsauslastung:F1} %");
     }
 
+
+
+
+    // Speichert den aktuellen Sitzplan in die Datei "Saal.csv" (CSV-Format).
     public void SaalSpeichern()
     {
         using (StreamWriter writer = new StreamWriter("Saal.csv"))
@@ -207,6 +232,8 @@ internal class Kinosaal
         }
     }
 
+    // Lädt den Sitzplan aus der Datei "Saal.csv" falls vorhanden.
+    // Falls die Datei nicht existiert, werden alle Plätze freigegeben.
     public void SaalLaden()
     {
         if (!File.Exists("Saal.csv"))
